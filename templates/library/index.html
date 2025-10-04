@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+<head>
+  <title>PM Framework Analyzer - Home</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      background: white; 
+      padding: 40px; 
+      border-radius: 12px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+    }
+    h1 { 
+      font-size: 2.5em; 
+      margin-bottom: 10px; 
+      color: #2c3e50; 
+      font-weight: 700;
+    }
+    .subtitle {
+      color: #7f8c8d; 
+      margin-bottom: 30px; 
+      font-size: 1.1em;
+    }
+    .section-header { 
+      font-size: 1.5em; 
+      margin-top: 40px; 
+      margin-bottom: 20px; 
+      color: #34495e; 
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-header::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+    
+    /* Book Cards */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .book-card {
+      background: #ffffff;
+      border: 2px solid #e8eaf6;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .book-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+    .book-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+      border-color: #667eea;
+    }
+    .book-card a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .book-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .book-meta {
+      color: #95a5a6;
+      font-size: 0.9em;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #95a5a6;
+      font-size: 1.1em;
+    }
+    
+    /* Search Section */
+    .search-section {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 30px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      max-width: 700px;
+    }
+    input[type="text"] { 
+      flex: 1;
+      padding: 14px 18px; 
+      border: 2px solid #e0e0e0; 
+      border-radius: 6px; 
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button { 
+      padding: 14px 28px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      border: none; 
+      border-radius: 6px; 
+      font-size: 1em; 
+      font-weight: 600;
+      cursor: pointer; 
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    button:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PM Framework Analyzer</h1>
+    <p class="subtitle">Compare and analyze project management standards with AI-powered insights</p>
+    
+    <h2 class="section-header">Available Standards</h2>
+    {% if books %}
+      <div class="books-grid">
+        {% for book in books %}
+          <div class="book-card">
+            <a href="{% url 'book_detail' book.id %}">
+              <div class="book-title">{{ book.title }}</div>
+              <div class="book-meta">Click to view table of contents</div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        No books imported yet. Use the management commands to import PDFs.
+      </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="{% url 'compare_topic' %}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #16a085 0%, #27ae60 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1em; box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3); transition: all 0.3s;">
+        Compare Topics Across All Books
+      </a>
+    </div>
+  </div>
+</body>
+</html>

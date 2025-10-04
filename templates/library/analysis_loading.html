@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <title>Generating Analysis...</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .loading-container { 
+      max-width: 600px; 
+      margin: 0 auto; 
+      background: white; 
+      padding: 60px 40px; 
+      border-radius: 12px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #667eea;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 30px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    h1 {
+      font-size: 2em;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+    
+    p {
+      color: #7f8c8d;
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    
+    .query-text {
+      color: #667eea;
+      font-weight: 600;
+    }
+    
+    .progress-steps {
+      margin-top: 30px;
+      text-align: left;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .step {
+      padding: 8px 0;
+      color: #7f8c8d;
+      font-size: 0.95em;
+    }
+    
+    .step.active {
+      color: #667eea;
+      font-weight: 600;
+    }
+    
+    .step::before {
+      content: '✓ ';
+      color: #27ae60;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+  </style>
+  <script>
+    // Auto-submit form after page loads
+    window.onload = function() {
+      document.getElementById('analysisForm').submit();
+    }
+  </script>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <h1>Generating Analysis</h1>
+    <p>Please wait while we analyze "<span class="query-text">{{ query }}</span>" across all project management standards...</p>
+    
+    <div class="progress-steps">
+      <div class="step active">Searching topics across all books</div>
+      <div class="step active">Extracting content from matching sections</div>
+      <div class="step active">Sending data to Gemini AI</div>
+      <div class="step active">Generating comparative insights...</div>
+    </div>
+    
+    <p style="margin-top: 20px; font-size: 0.9em; color: #95a5a6;">
+      This usually takes 5-10 seconds
+    </p>
+    
+    <!-- Hidden form to actually trigger the analysis -->
+    <form id="analysisForm" action="{% url 'analyze_topics_process' %}" method="get" style="display: none;">
+      <input type="hidden" name="q" value="{{ query }}">
+      <input type="hidden" name="from" value="{{ from_page }}">
+    </form>
+  </div>
+</body>
+</html>

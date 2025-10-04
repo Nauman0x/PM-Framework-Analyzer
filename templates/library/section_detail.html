@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+  <title>{{ section.title }}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      background: white; 
+      padding: 40px; 
+      border-radius: 12px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+    }
+    
+    /* Back Button */
+    .back-link { 
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px; 
+      padding: 10px 18px;
+      color: #667eea; 
+      text-decoration: none; 
+      font-weight: 600;
+      border: 2px solid #e8eaf6;
+      border-radius: 6px;
+      transition: all 0.3s;
+      background: #f8f9fa;
+    }
+    .back-link::before {
+      content: '←';
+      font-size: 1.2em;
+    }
+    .back-link:hover { 
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+      transform: translateX(-4px);
+    }
+    
+    h1 { 
+      font-size: 2em; 
+      margin-bottom: 12px; 
+      color: #2c3e50; 
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .section-meta { 
+      color: #7f8c8d; 
+      margin-bottom: 30px; 
+      font-size: 0.95em;
+      padding: 12px 18px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+    }
+    .content-box { 
+      margin-bottom: 30px; 
+      padding: 30px; 
+      background: #ffffff; 
+      border-radius: 8px; 
+      border: 2px solid #e8eaf6;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .page-text { 
+      line-height: 1.8; 
+      color: #2c3e50; 
+      white-space: pre-wrap; 
+      font-size: 1.05em; 
+    }
+    .warning-box {
+      padding: 20px 24px; 
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+      border-left: 4px solid #ffc107; 
+      border-radius: 6px; 
+      color: #856404;
+    }
+    
+    /* Navigation */
+    .nav-section {
+      margin-top: 40px; 
+      padding-top: 30px; 
+      border-top: 2px solid #e8eaf6; 
+      display: flex; 
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      text-decoration: none; 
+      border-radius: 6px; 
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      max-width: 45%;
+    }
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+    .nav-btn.prev::before {
+      content: '←';
+      font-size: 1.2em;
+    }
+    .nav-btn.next::after {
+      content: '→';
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    {% if request.GET.from == 'compare' %}
+      <a href="{% url 'compare_topic' %}" class="back-link">Back to Compare</a>
+    {% elif request.GET.from == 'search' %}
+      <a href="{% url 'search_topics' %}?q={{ request.GET.q }}" class="back-link">Back to Search Results</a>
+    {% elif request.GET.from == 'analysis' %}
+      <a href="{% url 'analyze_topics_process' %}?q={{ request.GET.q }}&from=compare" class="back-link">Back to Analysis</a>
+    {% else %}
+      <a href="{% url 'book_detail' section.book.id %}" class="back-link">Back to {{ section.book.title }}</a>
+    {% endif %}
+    <h1>
+      {% if section.section_number %}{{ section.section_number }} - {% endif %}
+      {{ section.title }}
+    </h1>
+    <div class="section-meta">
+      {% if section.start_page == section.end_page %}
+        Page {{ section.start_page }} • Level {{ section.level }}
+      {% else %}
+        Pages {{ section.start_page }}-{{ section.end_page }} • Level {{ section.level }}
+      {% endif %}
+    </div>
+    
+    {% if section.content %}
+      <div class="content-box">
+        <div class="page-text">{{ section.content }}</div>
+      </div>
+    {% else %}
+      <div class="warning-box">
+        <strong>Note:</strong> This section appears to be an organizational heading without body text. 
+        It may serve as a structural element in the document's table of contents.
+      </div>
+    {% endif %}
+    
+    <div class="nav-section">
+      {% if prev_section %}
+        <a href="{% url 'section_detail' prev_section.id %}?from={{ request.GET.from|default:'' }}&q={{ request.GET.q|default:'' }}" class="nav-btn prev">
+          <span>Previous: {% if prev_section.section_number %}{{ prev_section.section_number }} {% endif %}{{ prev_section.title|truncatechars:40 }}</span>
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      
+      {% if next_section %}
+        <a href="{% url 'section_detail' next_section.id %}?from={{ request.GET.from|default:'' }}&q={{ request.GET.q|default:'' }}" class="nav-btn next">
+          <span>Next: {% if next_section.section_number %}{{ next_section.section_number }} {% endif %}{{ next_section.title|truncatechars:40 }}</span>
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
