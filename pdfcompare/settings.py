@@ -12,7 +12,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'replace-me-in-production')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-ALLOWED_HOSTS='pm-framework-analyzer-feg2as3nb-ashnamasoods-projects.vercel.app'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
