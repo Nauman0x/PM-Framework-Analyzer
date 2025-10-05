@@ -5,7 +5,7 @@ import os
 DEBUG = False
 
 # Update allowed hosts for Vercel
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', '127.0.0.1', 'pm-framework-analyzer-feg2as3nb-ashnamasoods-projects.vercel.app']
 
 # CORS settings for Vercel
 CORS_ALLOWED_ORIGINS = [
