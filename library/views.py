@@ -13,55 +13,127 @@ from google import genai
 
 
 def format_markdown_to_html(text):
-    """Convert basic markdown to HTML"""
+    """Convert markdown to HTML with proper formatting and no extra spaces"""
     if not text:
         return ""
     
-    # Remove excessive blank lines
+    # Remove excessive blank lines first
     text = re.sub(r'\n{3,}', '\n\n', text)
     
-    # Convert ## headers to HTML
-    text = re.sub(r'^## (.+)$', r'<h2>\1</h2>', text, flags=re.MULTILINE)
+    # Normalize whitespace
+    text = re.sub(r'[ \t]+', ' ', text)
     
-    # Convert ### headers to HTML
-    text = re.sub(r'^### (.+)$', r'<h3>\1</h3>', text, flags=re.MULTILINE)
-    
-    # Convert **bold** to HTML
-    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
-    
-    # Convert *italic* to HTML (avoid already converted text)
-    text = re.sub(r'(?<!</)\*([^*]+?)\*(?!>)', r'<em>\1</em>', text)
-    
-    # Convert bullet points to proper lists
+    # Process lines
     lines = text.split('\n')
     formatted_lines = []
-    in_list = False
+    in_ul = False
+    in_ol = False
     
     for line in lines:
         stripped = line.strip()
-        if stripped.startswith('* '):
-            if not in_list:
-                formatted_lines.append('<ul>')
-                in_list = True
-            formatted_lines.append(f'<li>{stripped[2:]}</li>')
-        elif stripped.startswith('- '):
-            if not in_list:
-                formatted_lines.append('<ul>')
-                in_list = True
-            formatted_lines.append(f'<li>{stripped[2:]}</li>')
-        else:
-            if in_list:
+        
+        # Skip empty lines but close lists if needed
+        if not stripped:
+            if in_ul:
                 formatted_lines.append('</ul>')
-                in_list = False
-            if stripped and not stripped.startswith('<'):
-                formatted_lines.append(f'<p>{stripped}</p>')
-            elif stripped:
-                formatted_lines.append(stripped)
+                in_ul = False
+            if in_ol:
+                formatted_lines.append('</ol>')
+                in_ol = False
+            formatted_lines.append('<br>')
+            continue
+        
+        # Convert ## headers to h2
+        if stripped.startswith('## '):
+            if in_ul:
+                formatted_lines.append('</ul>')
+                in_ul = False
+            if in_ol:
+                formatted_lines.append('</ol>')
+                in_ol = False
+            content = stripped[3:].strip()
+            content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', content)
+            formatted_lines.append(f'<h2>{content}</h2>')
+            continue
+        
+        # Convert ### headers to h3
+        elif stripped.startswith('### '):
+            if in_ul:
+                formatted_lines.append('</ul>')
+                in_ul = False
+            if in_ol:
+                formatted_lines.append('</ol>')
+                in_ol = False
+            content = stripped[4:].strip()
+            content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', content)
+            formatted_lines.append(f'<h3>{content}</h3>')
+            continue
+        
+        # Convert #### headers to h4
+        elif stripped.startswith('#### '):
+            if in_ul:
+                formatted_lines.append('</ul>')
+                in_ul = False
+            if in_ol:
+                formatted_lines.append('</ol>')
+                in_ol = False
+            content = stripped[5:].strip()
+            content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', content)
+            formatted_lines.append(f'<h4>{content}</h4>')
+            continue
+        
+        # Handle bullet points with * or -
+        elif stripped.startswith('* ') or stripped.startswith('- '):
+            if in_ol:
+                formatted_lines.append('</ol>')
+                in_ol = False
+            if not in_ul:
+                formatted_lines.append('<ul>')
+                in_ul = True
+            content = stripped[2:].strip()
+            # Convert inline bold and italic
+            content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', content)
+            content = re.sub(r'\*(.+?)\*', r'<em>\1</em>', content)
+            formatted_lines.append(f'<li>{content}</li>')
+            continue
+        
+        # Handle numbered lists
+        elif re.match(r'^\d+\.\s+', stripped):
+            if in_ul:
+                formatted_lines.append('</ul>')
+                in_ul = False
+            if not in_ol:
+                formatted_lines.append('<ol>')
+                in_ol = True
+            content = re.sub(r'^\d+\.\s+', '', stripped).strip()
+            # Convert inline bold and italic
+            content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', content)
+            content = re.sub(r'\*(.+?)\*', r'<em>\1</em>', content)
+            formatted_lines.append(f'<li>{content}</li>')
+            continue
+        
+        # Regular paragraph
+        else:
+            if in_ul:
+                formatted_lines.append('</ul>')
+                in_ul = False
+            if in_ol:
+                formatted_lines.append('</ol>')
+                in_ol = False
+            
+            # Convert inline bold and italic
+            content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', stripped)
+            content = re.sub(r'\*(.+?)\*', r'<em>\1</em>', content)
+            formatted_lines.append(f'<p>{content}</p>')
     
-    if in_list:
+    # Close any open lists
+    if in_ul:
         formatted_lines.append('</ul>')
+    if in_ol:
+        formatted_lines.append('</ol>')
     
     return '\n'.join(formatted_lines)
+
 
 from .models import Section
 
@@ -261,7 +333,7 @@ def section_detail(request, section_id):
     })
 
 
-def format_markdown_to_html(text):
+def format_analysis_markdown_to_html(text):
     """Convert markdown to HTML matching the book detail page style"""
     import re
     
@@ -422,7 +494,7 @@ def analyze_topics_process(request):
         
         analysis_text = response.text
         # Format markdown to HTML
-        analysis_text = format_markdown_to_html(analysis_text)
+        analysis_text = format_analysis_markdown_to_html(analysis_text)
         
     except Exception as e:
         analysis_text = f"<p>Error generating analysis: {str(e)}</p>"
@@ -435,3 +507,219 @@ def analyze_topics_process(request):
         'total_books': len(sections_by_book),
         'total_sections': len(sections)
     })
+
+
+# Phase 2: Process Design & Tailoring Views
+from .models import ProjectScenario, ProcessTemplate, ProcessPhase
+
+def scenarios_list(request):
+    """Display all project scenarios"""
+    scenarios = ProjectScenario.objects.all().order_by('scenario_type')
+    return render(request, 'library/scenarios_list.html', {
+        'scenarios': scenarios
+    })
+
+
+def scenario_detail(request, scenario_id):
+    """Display detailed view of a scenario and its process templates"""
+    scenario = get_object_or_404(ProjectScenario, id=scenario_id)
+    templates = ProcessTemplate.objects.filter(scenario=scenario).prefetch_related(
+        'phases__activities__deliverables',
+        'phases__decision_gates'
+    )
+    
+    return render(request, 'library/scenario_detail.html', {
+        'scenario': scenario,
+        'templates': templates
+    })
+
+
+def process_template_detail(request, template_id):
+    """Display detailed process template with phases, activities, and deliverables"""
+    template = get_object_or_404(
+        ProcessTemplate.objects.prefetch_related(
+            'phases__activities__deliverables',
+            'phases__activities__roles',
+            'phases__decision_gates',
+            'standard_references__book',
+            'standard_references__section'
+        ),
+        id=template_id
+    )
+    
+    # Organize data by phases
+    phases_data = []
+    for phase in template.phases.all().order_by('order'):
+        activities = phase.activities.all().order_by('order')
+        decision_gates = phase.decision_gates.all().order_by('order')
+        phases_data.append({
+            'phase': phase,
+            'activities': activities,
+            'decision_gates': decision_gates
+        })
+    
+    return render(request, 'library/process_template_detail.html', {
+        'template': template,
+        'phases_data': phases_data,
+        'standard_references': template.standard_references.all()
+    })
+
+
+def generate_process(request, scenario_id):
+    """AI-powered process generation for a scenario"""
+    scenario = get_object_or_404(ProjectScenario, id=scenario_id)
+    
+    if request.method == 'POST':
+        # Show loading page
+        return render(request, 'library/process_generating.html', {
+            'scenario': scenario
+        })
+    
+    return HttpResponseRedirect(reverse('scenario_detail', args=[scenario_id]))
+
+
+def generate_process_ai(request, scenario_id):
+    """AI endpoint to generate process template"""
+    scenario = get_object_or_404(ProjectScenario, id=scenario_id)
+    
+    # Get all available standards for reference
+    books = Book.objects.all()
+    
+    # Create focused AI prompt
+    prompt = f"""Design a tailored project management process for this scenario. Be CONCISE and SPECIFIC.
+
+SCENARIO: {scenario.name}
+Type: {scenario.scenario_type}
+Context: {scenario.context}
+Duration: {scenario.duration} | Team: {scenario.team_size}
+
+STANDARDS AVAILABLE:
+{chr(10).join([f'- {book.title}' for book in books])}
+
+REQUIREMENTS:
+1. Keep each section brief and actionable
+2. Cite specific PM standards with page numbers where applicable
+3. Focus on what's essential for THIS scenario
+4. Use clear structure without unnecessary elaboration
+
+OUTPUT FORMAT:
+
+## Process Name
+[One concise sentence describing the process]
+
+## Approach
+[2-3 sentences max on methodology and why it fits this scenario]
+
+## Phases
+For each phase (4-5 phases total):
+### [Phase Name] (Duration)
+- Objective: [One sentence]
+- Key Activities: [List 2-3 critical activities only]
+- Deliverables: [List 2-3 main outputs]
+- Decision Gate: [Name and criteria in one line]
+- Reference: [Standard name, page number if available]
+
+## Critical Roles
+[List only essential roles with one-line responsibility each]
+
+## Tailoring Rationale
+[3-4 bullet points explaining key adaptations from standards for this specific scenario]
+
+IMPORTANT:
+- No extra asterisks or formatting symbols
+- Each bullet point should be ONE clear line
+- Cite actual page numbers from standards when referencing (e.g., "PMBOK p.123")
+- Keep total output under 500 words
+- Focus on scenario-specific adaptations, not generic PM theory"""
+
+    try:
+        # Initialize Gemini client
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        
+        # Generate response
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-exp',
+            contents=prompt
+        )
+        
+        # Get the generated text
+        generated_text = response.text
+        
+        # Format for HTML display
+        formatted_html = format_markdown_to_html(generated_text)
+        
+        # Save to scenario
+        from django.utils import timezone
+        scenario.process_design = formatted_html
+        scenario.generated_at = timezone.now()
+        scenario.save()
+        
+        return JsonResponse({
+            'success': True,
+            'process_design': formatted_html,
+            'raw_text': generated_text
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
+
+
+def process_diagram(request, template_id):
+    """Generate visual process diagram"""
+    template = get_object_or_404(
+        ProcessTemplate.objects.prefetch_related(
+            'phases__activities__deliverables',
+            'phases__decision_gates'
+        ),
+        id=template_id
+    )
+    
+    # Generate Mermaid diagram syntax
+    mermaid_diagram = generate_mermaid_diagram(template)
+    
+    return render(request, 'library/process_diagram.html', {
+        'template': template,
+        'mermaid_diagram': mermaid_diagram
+    })
+
+
+def generate_mermaid_diagram(template):
+    """Generate Mermaid.js flowchart syntax for the process"""
+    lines = ["graph TD"]
+    lines.append(f"    START([Start: {template.name}])")
+    
+    prev_node = "START"
+    phases = template.phases.all().order_by('order')
+    
+    for i, phase in enumerate(phases):
+        phase_id = f"PHASE{i+1}"
+        lines.append(f"    {phase_id}[{phase.name}]")
+        lines.append(f"    {prev_node} --> {phase_id}")
+        
+        # Add activities within phase as subgraph
+        activities = phase.activities.all().order_by('order')
+        if activities:
+            lines.append(f"    subgraph {phase.name}")
+            for j, activity in enumerate(activities):
+                act_id = f"ACT{i+1}_{j+1}"
+                lines.append(f"        {act_id}[{activity.name}]")
+            lines.append(f"    end")
+        
+        # Add decision gate if exists
+        decision_gates = phase.decision_gates.all()
+        if decision_gates:
+            for k, gate in enumerate(decision_gates):
+                gate_id = f"GATE{i+1}_{k+1}"
+                lines.append(f"    {gate_id}{{{gate.name}}}")
+                lines.append(f"    {phase_id} --> {gate_id}")
+                prev_node = gate_id
+        else:
+            prev_node = phase_id
+    
+    lines.append(f"    END([Project Complete])")
+    lines.append(f"    {prev_node} --> END")
+    
+    return "\n".join(lines)

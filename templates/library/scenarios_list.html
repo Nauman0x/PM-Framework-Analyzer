@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Scenarios - PM Framework Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .nav-links {
+            margin-top: 15px;
+        }
+        
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #764ba2;
+        }
+        
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .scenario-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .scenario-type {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .type-software {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .type-innovation {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .type-government {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .scenario-card h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .scenario-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .meta-item {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .meta-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .characteristics {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .characteristics h3 {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .characteristics-preview {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .intro-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .intro-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .intro-section p {
+            color: #666;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Process Design Scenarios</h1>
+            <p class="subtitle">Choose a project scenario to design a tailored end-to-end process</p>
+            <div class="nav-links">
+                <a href="{% url 'index' %}">← Back to Standards Library</a>
+                <a href="{% url 'search_topics' %}">Search Topics</a>
+                <a href="{% url 'analyze_topics' %}">AI Analysis</a>
+            </div>
+        </header>
+        
+        <div class="intro-section">
+            <h2>Phase 2: Process Proposal & Tailoring</h2>
+            <p>
+                Select one of the project scenarios below to generate a comprehensive, tailored project management process. 
+                The system will analyze the scenario characteristics and design an end-to-end process drawing from 
+                PMBOK, PRINCE2, ISO 21500, and ISO 21502 standards. Each process includes phases, activities, 
+                deliverables, decision gates, roles, and justifications for tailoring decisions.
+            </p>
+        </div>
+        
+        <div class="scenarios-grid">
+            {% for scenario in scenarios %}
+            <div class="scenario-card">
+                <span class="scenario-type type-{{ scenario.scenario_type }}">
+                    {{ scenario.get_scenario_type_display }}
+                </span>
+                
+                <h2>{{ scenario.name }}</h2>
+                
+                <p class="scenario-description">{{ scenario.description }}</p>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Duration</div>
+                        <div class="meta-value">{{ scenario.duration }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Team Size</div>
+                        <div class="meta-value">{{ scenario.team_size }}</div>
+                    </div>
+                </div>
+                
+                <div class="characteristics">
+                    <h3>Key Characteristics:</h3>
+                    <div class="characteristics-preview">
+                        {{ scenario.key_characteristics|linebreaks|truncatewords:20 }}
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <form method="POST" action="{% url 'generate_process' scenario.id %}" style="width: 100%;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            ✨ Generate Process Design
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

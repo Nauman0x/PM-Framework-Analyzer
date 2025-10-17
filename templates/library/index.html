@@ -168,9 +168,13 @@
       </div>
     {% endif %}
 
-    <div style="text-align: center; margin-top: 40px;">
+    <div style="text-align: center; margin-top: 40px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
       <a href="{% url 'compare_topic' %}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #16a085 0%, #27ae60 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1em; box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3); transition: all 0.3s;">
         Compare Topics Across All Books
+      </a>
+      
+      <a href="{% url 'scenarios_list' %}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1em; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); transition: all 0.3s;">
+        Process Design Scenarios
       </a>
     </div>
   </div>

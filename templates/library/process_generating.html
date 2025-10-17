@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generating Process - PM Framework Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .loading-container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-name {
+            color: #667eea;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .status-text {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .progress-steps {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .step {
+            padding: 10px 20px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .step.active {
+            background: #e3f2fd;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step.complete {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .step-icon {
+            font-size: 1.5rem;
+        }
+        
+        .step-text {
+            flex: 1;
+            color: #333;
+        }
+        
+        #result-container {
+            display: none;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .result-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #c62828;
+        }
+        
+        .success-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div id="loading-section">
+            <div class="spinner"></div>
+            <h1>Generating Process Design</h1>
+            <p class="scenario-name">{{ scenario.name }}</p>
+            <p class="status-text">AI is analyzing the scenario and designing your process...</p>
+            
+            <div class="progress-steps">
+                <div class="step complete">
+                    <span class="step-icon">✓</span>
+                    <span class="step-text">Scenario analysis complete</span>
+                </div>
+                <div class="step active" id="step-standards">
+                    <span class="step-icon">⚙</span>
+                    <span class="step-text">Reviewing PM standards (PMBOK, PRINCE2, ISO)</span>
+                </div>
+                <div class="step" id="step-phases">
+                    <span class="step-icon">◯</span>
+                    <span class="step-text">Designing process phases</span>
+                </div>
+                <div class="step" id="step-activities">
+                    <span class="step-icon">◯</span>
+                    <span class="step-text">Defining activities and deliverables</span>
+                </div>
+                <div class="step" id="step-tailoring">
+                    <span class="step-icon">◯</span>
+                    <span class="step-text">Generating tailoring justifications</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result-container">
+            <!-- Results will be injected here -->
+        </div>
+    </div>
+    
+    <script>
+        // Simulate progress steps
+        setTimeout(() => {
+            document.getElementById('step-standards').className = 'step complete';
+            document.getElementById('step-phases').className = 'step active';
+        }, 2000);
+        
+        setTimeout(() => {
+            document.getElementById('step-phases').className = 'step complete';
+            document.getElementById('step-activities').className = 'step active';
+        }, 4000);
+        
+        setTimeout(() => {
+            document.getElementById('step-activities').className = 'step complete';
+            document.getElementById('step-tailoring').className = 'step active';
+        }, 6000);
+        
+        // Call AI endpoint
+        fetch('{% url "generate_process_ai" scenario.id %}')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('step-tailoring').className = 'step complete';
+                
+                setTimeout(() => {
+                    if (data.success) {
+                        // Redirect to scenario detail page to view the generated process
+                        window.location.href = '{% url "scenario_detail" scenario.id %}';
+                    } else {
+                        // Show error
+                        document.getElementById('loading-section').style.display = 'none';
+                        const resultContainer = document.getElementById('result-container');
+                        resultContainer.style.display = 'block';
+                        resultContainer.innerHTML = `
+                            <div class="error-message">
+                                <h3 style="margin-bottom: 10px;">Generation Failed</h3>
+                                <p>${data.error}</p>
+                            </div>
+                            <div class="success-actions">
+                                <a href="{% url 'scenarios_list' %}" class="btn btn-secondary">
+                                    ← Back to Scenarios
+                                </a>
+                                <button onclick="location.reload()" class="btn btn-primary">
+                                    Try Again
+                                </button>
+                            </div>
+                        `;
+                    }
+                }, 1000);
+            })
+            .catch(error => {
+                document.getElementById('loading-section').style.display = 'none';
+                const resultContainer = document.getElementById('result-container');
+                resultContainer.style.display = 'block';
+                resultContainer.innerHTML = `
+                    <div class="error-message">
+                        <h3 style="margin-bottom: 10px;">Connection Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                    <div class="success-actions">
+                        <a href="{% url 'scenarios_list' %}" class="btn btn-secondary">
+                            ← Back to Scenarios
+                        </a>
+                        <button onclick="location.reload()" class="btn btn-primary">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            });
+    </script>
+</body>
+</html>
