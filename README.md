@@ -55,9 +55,13 @@ pip install -r requirements.txt
 ```
 
 2. **Set up environment variables** (create `.env` file):
-```
+
+```env
 DJANGO_SECRET_KEY=your-secret-key-here
 GEMINI_API_KEY=your-gemini-api-key
+```
+
+<!-- Trigger Vercel redeploy: Oct 18, 2025 -->
 DEBUG=True
 ```
 
@@ -274,5 +278,6 @@ Last Updated: October 5, 2025
 - Text is cleaned and normalized during import
 - Sections show accurate page ranges (start to end)
 - Web uploads are processed the same way as command-line imports
-#   T r i g g e r   r e d e p l o y  
+#   T r i g g e r   r e d e p l o y 
+ 
  
