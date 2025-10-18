@@ -1,3 +1,4 @@
+
 # PM Framework Analyzer
 
 A Django-based web application for comparing and analyzing project management standards (ISO 21500, ISO 21502, PRINCE2, PMBOK Guide) with AI-powered comparative insights.
@@ -9,6 +10,7 @@ PM Framework Analyzer is a comprehensive tool designed to help project managers,
 ## Features
 
 ### Core Functionality
+
 - **PDF Content Extraction**: Automatically extracts and indexes content from PM standard PDFs with accurate page mapping
 - **Smart Search**: Search topics across all standards with results grouped by book
 - **AI-Powered Analysis**: Gemini AI generates comparative analysis showing similarities, differences, and unique points
@@ -16,6 +18,7 @@ PM Framework Analyzer is a comprehensive tool designed to help project managers,
 - **Page References**: All content includes accurate page number references for easy citation
 
 ### User Experience
+
 - **Modern Interface**: Clean, gradient-based design with responsive layout
 - **Loading Indicators**: Visual feedback during AI analysis processing
 - **Context-Aware Navigation**: Smart back buttons that remember your browsing context
@@ -24,22 +27,26 @@ PM Framework Analyzer is a comprehensive tool designed to help project managers,
 ## Technology Stack
 
 ### Backend
+
 - Django 4.2.7
 - Python 3.9+
 - SQLite Database
 - pdfplumber 0.10.3
 
 ### AI Integration
+
 - Google Gemini API (gemini-2.0-flash-exp)
 - google-genai 0.3.0
 
 ### Frontend
+
 - HTML5
 - CSS3
 - Vanilla JavaScript
 - Responsive Design
 
 ### Deployment
+
 - Vercel (Serverless Functions)
 - GitHub (Version Control)
 - Git
@@ -59,18 +66,19 @@ pip install -r requirements.txt
 ```env
 DJANGO_SECRET_KEY=your-secret-key-here
 GEMINI_API_KEY=your-gemini-api-key
-```
-
-<!-- Trigger Vercel redeploy: Oct 18, 2025 -->
 DEBUG=True
 ```
 
+<!-- Trigger Vercel redeploy: Oct 18, 2025 -->
+
 3. **Run migrations**:
+
 ```powershell
 .\.venv\Scripts\python manage.py migrate
 ```
 
 4. **Import PDF standards** (optional):
+
 ```powershell
 .\.venv\Scripts\python manage.py import_iso21500
 .\.venv\Scripts\python manage.py import_iso21502
