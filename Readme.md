@@ -92,7 +92,7 @@ DEBUG=True
 .\.venv\Scripts\python manage.py runserver
 ```
 
-6. **Access at** http://127.0.0.1:8000/
+
 
 ## Project Structure
 
